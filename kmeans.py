@@ -8,7 +8,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
 
-DATA = "./Data/Cleaned_TheWebster_2023_Final.csv"
+DATA = "./Data/Cleaned_TheWebster_2022_Final.csv"
 
 def load_data(file):
     dataset = pd.read_csv(file)
