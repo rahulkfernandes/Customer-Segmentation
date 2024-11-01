@@ -144,14 +144,14 @@ def scaling(dataset, attributes):
 
 if __name__ == "__main__":
     data = load_data(DATA)
-    eda(data)
+    # eda(data)
 
     preprocessed = preprocess(data)
     X = preprocessed.copy()
 
     # Apply K-Means clustering
     n_clusters = 4  # You can adjust the number of clusters as needed
-    kmeans = KMeans(n_clusters=n_clusters, random_state=20)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=65)
     preprocessed['Cluster'] = kmeans.fit_predict(X)
 
     # Evaluate the clustering
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     plt.title("K-Means Clusters (PCA Reduced)")
     plt.show()
 
-    '''
+    # For elbow method
     inertias = []
     for k in range(1, 11):  # Try cluster counts from 1 to 10
         kmeans = KMeans(n_clusters=k, random_state=42)
@@ -190,4 +190,4 @@ if __name__ == "__main__":
     plt.ylabel('Inertia')
     plt.title('Elbow Method for Optimal k')
     plt.show()
-    '''
+    
