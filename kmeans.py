@@ -41,6 +41,9 @@ def preprocess(dataset):
         axis = 1, 
         inplace = True
     )
+    # How to split
+    # men_data = dataset[dataset["Item Dept"] == 'Men']
+    # women_data = dataset[dataset["Item Dept"] == 'Women']
 
     ###### Use if these columns are required #####
     # label_encoders = {}
@@ -136,8 +139,7 @@ if __name__ == "__main__":
     X = preprocessed.copy()
 
     # Apply K-Means clustering
-    n_clusters = 4  # You can adjust the number of clusters as needed
-    kmeans = KMeans(n_clusters=n_clusters, random_state=65)
+    kmeans = KMeans(n_clusters=4, random_state=65)
     preprocessed['Cluster'] = kmeans.fit_predict(X)
 
     # Evaluate the clustering
