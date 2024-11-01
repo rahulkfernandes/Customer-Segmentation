@@ -42,8 +42,8 @@ def preprocess(dataset):
         inplace = True
     )
     # How to split
-    # men_data = dataset[dataset["Item Dept"] == 'Men']
-    # women_data = dataset[dataset["Item Dept"] == 'Women']
+    men_data = dataset[dataset["Item Department"] == 'MEN']
+    women_data = dataset[dataset["Item Department"] == 'WOMEN']
 
     ###### Use if these columns are required #####
     # label_encoders = {}
@@ -58,13 +58,18 @@ def preprocess(dataset):
     #     dataset[col] = le.fit_transform(dataset[col])
     #     label_encoders[col] = le  # Save the encoder in case its needed later for interpretation
     
-    new_engg = feat_engg(data)
-    new_engg_data = new_engg[0]
-    attributes = new_engg[1]
-    cleaned = rm_outlier(new_engg_data, attributes)
+    new_men = feat_engg(men_data)
+    new_engg_men = new_men[0]
+    attributes = new_men[1]
+    cleaned_men = rm_outlier(new_engg_men, attributes)
+
+    new_women = feat_engg(women_data)
+    new_engg_women = new_women[0]
+    attributes = new_women[1]
+    cleaned_women = rm_outlier(new_engg_women, attributes)
     # scaled = scaling(cleaned, attributes)
     
-    return cleaned
+    return cleaned_men, cleaned_women
 
 def feat_engg(dataset):
     # Total Monetary
@@ -135,42 +140,44 @@ if __name__ == "__main__":
     data = load_data(DATA)
     # eda(data)
 
-    preprocessed = preprocess(data)
-    X = preprocessed[['Purchased Amount', 'Frequency', 'Recency']]
+    processed_men, processed_women = preprocess(data)
+    X_men = processed_men[['Purchased Amount', 'Frequency', 'Recency']]
+    X_women = processed_women[['Purchased Amount', 'Frequency', 'Recency']]
 
+    # =============MEN=================
     # Apply K-Means clustering
     kmeans = KMeans(n_clusters=4, random_state=65)
-    preprocessed['Cluster'] = kmeans.fit_predict(X)
+    processed_men['Cluster'] = kmeans.fit_predict(X_men)
 
     # Evaluate the clustering
     inertia = kmeans.inertia_  # Sum of squared distances of samples to their closest cluster center
-    silhouette_avg = silhouette_score(X, preprocessed['Cluster'])
+    silhouette_avg = silhouette_score(X_men, processed_men['Cluster'])
 
     print(f"Inertia (Within-cluster sum of squares): {inertia}")
     print(f"Silhouette Score: {silhouette_avg}")
 
-    cluster_summary = preprocessed.groupby('Cluster').describe()
-    print("Cluster Summary Statistics:")
+    cluster_summary = processed_men.groupby('Cluster').describe()
+    print("Cluster Summary Statistics For MEN:")
     print(cluster_summary.T)
 
     # Reduce dimensions to 2D for visualization with PCA
     pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(X)
+    X_pca = pca.fit_transform(X_men)
 
     # Plot the clusters
     plt.figure(figsize=(10, 6))
-    scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=preprocessed['Cluster'], cmap='viridis', alpha=0.5)
+    scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=processed_men['Cluster'], cmap='viridis', alpha=0.5)
     plt.colorbar(scatter, label="Cluster")
     plt.xlabel("PCA Component 1")
     plt.ylabel("PCA Component 2")
-    plt.title("K-Means Clusters (PCA Reduced)")
+    plt.title("K-Means Clusters FOR MEN (PCA Reduced)")
     plt.show()
 
     # For elbow method
     inertias = []
     for k in range(1, 11):  # Try cluster counts from 1 to 10
         kmeans = KMeans(n_clusters=k, random_state=42)
-        kmeans.fit(X)
+        kmeans.fit(X_men)
         inertias.append(kmeans.inertia_)
 
     plt.plot(range(1, 11), inertias, marker='o')
@@ -179,3 +186,32 @@ if __name__ == "__main__":
     plt.title('Elbow Method for Optimal k')
     plt.show()
     
+
+    # =============WOMEN=================
+    # Apply K-Means clustering
+    kmeans = KMeans(n_clusters=4, random_state=65)
+    processed_women['Cluster'] = kmeans.fit_predict(X_women)
+
+    # Evaluate the clustering
+    inertia = kmeans.inertia_  # Sum of squared distances of samples to their closest cluster center
+    silhouette_avg = silhouette_score(X_women, processed_women['Cluster'])
+
+    print(f"Inertia (Within-cluster sum of squares): {inertia}")
+    print(f"Silhouette Score: {silhouette_avg}")
+
+    cluster_summary = processed_women.groupby('Cluster').describe()
+    print("Cluster Summary Statistics For WOMEN:")
+    print(cluster_summary.T)
+
+    # Reduce dimensions to 2D for visualization with PCA
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(X_women)
+
+    # Plot the clusters
+    plt.figure(figsize=(10, 6))
+    scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=processed_women['Cluster'], cmap='viridis', alpha=0.5)
+    plt.colorbar(scatter, label="Cluster")
+    plt.xlabel("PCA Component 1")
+    plt.ylabel("PCA Component 2")
+    plt.title("K-Means Clusters FOR WOMEN (PCA Reduced)")
+    plt.show()
