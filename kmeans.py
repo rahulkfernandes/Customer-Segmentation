@@ -144,7 +144,7 @@ def scaling(dataset, attributes):
 
 if __name__ == "__main__":
     data = load_data(DATA)
-    # eda(data)
+    eda(data)
 
     preprocessed = preprocess(data)
     X = preprocessed.copy()
@@ -161,9 +161,9 @@ if __name__ == "__main__":
     print(f"Inertia (Within-cluster sum of squares): {inertia}")
     print(f"Silhouette Score: {silhouette_avg}")
 
-    cluster_summary = preprocessed.groupby('Cluster').mean(numeric_only=True)
+    cluster_summary = preprocessed.groupby('Cluster').describe()
     print("Cluster Summary Statistics:")
-    print(cluster_summary)
+    print(cluster_summary.T)
 
     # Reduce dimensions to 2D for visualization with PCA
     pca = PCA(n_components=2)
