@@ -107,27 +107,13 @@ def rm_outlier(dataset, attributes):
     # plt.xlabel ("Attributes", fontweight = 'bold')
     # plt.show()
 
-    # Removing (statistical) outliers for Amount
-    Q1 = dataset['Purchased Amount'].quantile(0.05)
-    Q3 = dataset['Purchased Amount'].quantile(0.95)
-    IQR = Q3 - Q1
-    dataset = dataset[
-        (dataset['Purchased Amount'] >= Q1 - 1.5*IQR) & (dataset['Purchased Amount'] <= Q3 + 1.5*IQR)
-    ]
-    # Removing (statistical) outliers for Recency
-    Q1 = dataset['Recency'].quantile(0.05)
-    Q3 = dataset['Recency'].quantile(0.95)
-    IQR = Q3 - Q1
-    dataset = dataset[
-        (dataset['Recency'] >= Q1 - 1.5*IQR) & (dataset['Recency'] <= Q3 + 1.5*IQR)
-    ]
-    # Removing (statistical) outliers for Frequency
-    Q1 = dataset['Frequency'].quantile(0.05)
-    Q3 = dataset['Frequency'].quantile(0.95)
-    IQR = Q3 - Q1
-    dataset = dataset[
-        (dataset['Frequency'] >= Q1 - 1.5*IQR) & (dataset['Frequency'] <= Q3 + 1.5*IQR)
-    ]
+    for att in attributes:
+        Q1 = dataset[att].quantile(0.05)
+        Q3 = dataset[att].quantile(0.95)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        dataset = dataset[(dataset[att] >= lower_bound) & (dataset[att] <= upper_bound)]
 
     return dataset
 
