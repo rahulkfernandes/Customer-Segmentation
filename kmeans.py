@@ -62,9 +62,9 @@ def preprocess(dataset):
     new_engg_data = new_engg[0]
     attributes = new_engg[1]
     cleaned = rm_outlier(new_engg_data, attributes)
-    scaled = scaling(cleaned, attributes)
+    # scaled = scaling(cleaned, attributes)
     
-    return scaled
+    return cleaned
 
 def feat_engg(dataset):
     # Total Monetary
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     # eda(data)
 
     preprocessed = preprocess(data)
-    X = preprocessed.copy()
+    X = preprocessed[['Purchased Amount', 'Frequency', 'Recency']]
 
     # Apply K-Means clustering
     kmeans = KMeans(n_clusters=4, random_state=65)
